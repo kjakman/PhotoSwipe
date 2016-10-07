@@ -3,7 +3,10 @@
 * UI on top of main sliding area (caption, arrows, close button, etc.).
 * Built just using public methods/properties of PhotoSwipe.
 * 
+* Changed by Kjetil Larsen (github@kjakman.com) to integrate with vPatina.com and add buttons: Like, Chat, User, and Info
+* v 0.0.1
 */
+
 (function (root, factory) { 
 	if (typeof define === 'function' && define.amd) {
 		define(factory);
