@@ -9,7 +9,7 @@
 module.exports = function(grunt) {
 
   'use strict';
-
+  
   var jekyllConfig = "isLocal : false \r\n"+
       "permalink: /:title/ \r\n"+
       "exclude: ['.json', '.rvmrc', '.rbenv-version', 'README.md', 'Rakefile'," +
@@ -135,15 +135,21 @@ module.exports = function(grunt) {
     },
 
     uglify: {
-      my_target: {
+      ps: {
         files: {
           'dist/photoswipe.min.js': ['dist/photoswipe.js'],
           'dist/photoswipe-ui-default.min.js': ['dist/photoswipe-ui-default.js']
         },
-        preserveComments: 'some'
+        preserveComments: false
       },
+      vp: {
+        files: {
+          'dist/vp.min.js': ['dist/vp.js'],
+        },
+        preserveComments: false
+      },        
       options: {
-        preserveComments: 'some'
+        preserveComments: false
       }
     },
 
@@ -157,21 +163,31 @@ module.exports = function(grunt) {
     },
 
     cssmin: {
-      compress: {
+      ps: {
         files: {
           "website/site-assets/all.min.css": ["website/site-assets/site.css", "website/dist/photoswipe.css"]
         }
-      }
+      },
+      vp: {
+        files: {
+          "dist/vp.min.css": ["dist/photoswipe.css", "src/vpatina.css"]
+        }
+      }      
+    },
+        
+    concat: {      
+      options: {
+        // define a string to put between each file in the concatenated output
+        separator: '\n\n// ------ ** ------ \n\n'
+      },      
+      dist: {
+        // the files to concatenate
+        src: ['dist/photoswipe.min.js', 'dist/photoswipe-ui-default.min.js', 'src/js/vpatina-helpers.js', 'src/js/vpatina.js'],
+        // the location of the resulting JS file
+        dest: 'dist/vp.js'
+      },      
     },
     
-    vpmin: {
-      compress: {
-        files: {
-          "website/site-assets/all.min.css": ["website/site-assets/site.css", "website/dist/photoswipe.css"]
-        }
-      }
-    },
-
     svgmin: {
       dist: {
         files: {
@@ -203,6 +219,9 @@ module.exports = function(grunt) {
 
 
   // grunt pswpbuild --pswp-exclude=ajax,image
+  grunt.task.registerMultiTask('vpmin', 'Makes PhotoSwipe core JS file.', function() {
+  });
+  
   grunt.task.registerMultiTask('pswpbuild', 'Makes PhotoSwipe core JS file.', function() {
 
     var files = this.data.src,
@@ -289,7 +308,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('production', ['sass', 'autoprefixer', 'pswpbuild', 'uglify', 'copy', 'cssmin', 'jekyll:production']);
   grunt.registerTask('nosite', ['sass', 'autoprefixer', 'pswpbuild', 'uglify']);
-  grunt.registerTask('vpatina', ['sass', 'autoprefixer', 'pswpbuild', 'uglify', 'cssmin', 'vpmin']);
+  grunt.registerTask('vpatina', ['sass', 'autoprefixer', 'pswpbuild', 'uglify:ps', 'cssmin:ps', 'concat', 'uglify:vp', 'cssmin:vp']);
   
   grunt.registerTask('hint', ['jshint']);
   grunt.registerTask('awsupload', ['aws_s3']);

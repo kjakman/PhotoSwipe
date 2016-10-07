@@ -211,7 +211,7 @@ var openPhotoSwipe = function(cid, index, galleryElement, disableAnimation, from
         // `pswp` is the gallery instance object,
         // you should define it by yourself
         // 
-        return "http://test.vpatina.com/user/17426/vault/1130/title_image/image/big/deathtostock_clementine4.jpg";
+        // return "http://test.vpatina.com/user/17426/vault/1130/title_image/image/big/deathtostock_clementine4.jpg";
         return pswp.currItem.src || '';
     },
     getPageURLForShare: function( shareButtonData ) {
@@ -469,3 +469,4 @@ for (var i = 0; i < len; i++) {
   data = JSON.parse(data);
   vp_load(vpElement, data, false);  
 }
+f17426
