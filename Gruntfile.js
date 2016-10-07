@@ -163,6 +163,14 @@ module.exports = function(grunt) {
         }
       }
     },
+    
+    vpmin: {
+      compress: {
+        files: {
+          "website/site-assets/all.min.css": ["website/site-assets/site.css", "website/dist/photoswipe.css"]
+        }
+      }
+    },
 
     svgmin: {
       dist: {
@@ -281,6 +289,8 @@ module.exports = function(grunt) {
 
   grunt.registerTask('production', ['sass', 'autoprefixer', 'pswpbuild', 'uglify', 'copy', 'cssmin', 'jekyll:production']);
   grunt.registerTask('nosite', ['sass', 'autoprefixer', 'pswpbuild', 'uglify']);
+  grunt.registerTask('vpatina', ['sass', 'autoprefixer', 'pswpbuild', 'uglify', 'cssmin', 'vpmin']);
+  
   grunt.registerTask('hint', ['jshint']);
   grunt.registerTask('awsupload', ['aws_s3']);
 

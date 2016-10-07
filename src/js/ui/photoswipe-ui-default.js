@@ -489,7 +489,38 @@ var PhotoSwipeUI_Default =
 			onInit: function(el) {  
 				_loadingIndicator = el;
 			} 
-		}
+		},
+		
+		/** vPatina PhotoSwipe buttons */
+    name: 'button--like',
+    option: 'likeEl',
+    onTap: function() {
+      console.log("Tap on like");
+      var likeBtn = document.getElementById("likeBtn");  
+      likeBtn.click();
+    },
+    name: 'button--user',
+    option: 'userEl',
+    onTap: function() {
+      console.log("Tap on user");
+      var userBtn = document.getElementById("userBtn");  
+      userBtn.click();
+    },
+    name: 'button--info',
+    option: 'infoEl',
+    onTap: function() {
+      console.log("Tap on info");
+      var infoBtn = document.getElementById("infoBtn");  
+      infoBtn.click();
+    },
+    name: 'button--chat',
+    option: 'chatEl',
+    onTap: function() {
+      console.log("Tap on chat");
+      var chatBtn = document.getElementById("chatBtn");  
+      chatBtn.click();
+    }
+		/** End vPatina */
 
 	];
 

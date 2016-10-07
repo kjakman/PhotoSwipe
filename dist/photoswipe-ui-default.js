@@ -6,7 +6,10 @@
 * UI on top of main sliding area (caption, arrows, close button, etc.).
 * Built just using public methods/properties of PhotoSwipe.
 * 
+* Changed by Kjetil Larsen (github@kjakman.com) to integrate with vPatina.com and add buttons: Like, Chat, User, and Info
+* v 0.0.1
 */
+
 (function (root, factory) { 
 	if (typeof define === 'function' && define.amd) {
 		define(factory);
@@ -489,7 +492,45 @@ var PhotoSwipeUI_Default =
 			onInit: function(el) {  
 				_loadingIndicator = el;
 			} 
-		}
+		},
+		{
+      /** vPatina PhotoSwipe buttons */
+      name: 'button--like',
+      option: 'likeEl',
+      onTap: function() {
+        console.log("Tap on like");
+        var likeBtn = document.getElementById("likeBtn");  
+        likeBtn.click();
+      }
+    },
+    {
+      name: 'button--user',
+      option: 'userEl',
+      onTap: function() {
+        console.log("Tap on user");
+        var userBtn = document.getElementById("userBtn");  
+        userBtn.click();
+      }
+    },
+    {
+      name: 'button--info',
+      option: 'infoEl',
+      onTap: function() {
+        console.log("Tap on info");
+        var infoBtn = document.getElementById("infoBtn");  
+        infoBtn.click();
+      }
+    },
+    {
+      name: 'button--chat',
+      option: 'chatEl',
+      onTap: function() {
+        console.log("Tap on chat");
+        var chatBtn = document.getElementById("chatBtn");  
+        chatBtn.click();
+      }
+    }
+		/** End vPatina */
 
 	];
 
