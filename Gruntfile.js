@@ -170,7 +170,7 @@ module.exports = function(grunt) {
       },
       vp: {
         files: {
-          "dist/vp.min.css": ["dist/photoswipe.css", "src/vpatina.css"]
+          "dist/vp.min.css": ["dist/vp.css"]
         }
       }      
     },
@@ -179,13 +179,20 @@ module.exports = function(grunt) {
       options: {
         // define a string to put between each file in the concatenated output
         separator: '\n\n// ------ ** ------ \n\n'
-      },      
-      dist: {
+      },  
+      
+      js: {
         // the files to concatenate
         src: ['dist/photoswipe.min.js', 'dist/photoswipe-ui-default.min.js', 'src/js/vpatina-helpers.js', 'src/js/vpatina.js'],
         // the location of the resulting JS file
         dest: 'dist/vp.js'
       },      
+      css: {
+        // the files to concatenate
+        src: ['dist/photoswipe.css', 'src/css/vpatina.css'],
+        // the location of the resulting JS file
+        dest: 'dist/vp.css'
+      }    
     },
     
     svgmin: {
@@ -308,7 +315,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('production', ['sass', 'autoprefixer', 'pswpbuild', 'uglify', 'copy', 'cssmin', 'jekyll:production']);
   grunt.registerTask('nosite', ['sass', 'autoprefixer', 'pswpbuild', 'uglify']);
-  grunt.registerTask('vpatina', ['sass', 'autoprefixer', 'pswpbuild', 'uglify:ps', 'cssmin:ps', 'concat', 'uglify:vp', 'cssmin:vp']);
+  grunt.registerTask('vpatina', ['sass', 'autoprefixer', 'pswpbuild', 'uglify:ps', 'cssmin:ps', 'concat:js', 'uglify:vp', 'concat:css', 'cssmin:vp']);
   
   grunt.registerTask('hint', ['jshint']);
   grunt.registerTask('awsupload', ['aws_s3']);
