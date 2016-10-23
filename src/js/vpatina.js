@@ -415,11 +415,11 @@ var onThumbnailsClick = function(e) {
   });
 
   var cid = clickedListItem.getAttribute('data-pswp-uid');
+  var index = clickedListItem.getAttribute('data-index') || 0;
 
   console.log("onThumbnailsClick: cid=" + cid);
   //console.log("onThumbnailsClick: cid=" + cid + " e:", e, " target:", eTarget, " item:", clickedListItem);
 
-  var index = 0;
   openPhotoSwipe( cid, index, clickedListItem );
   
   return;
@@ -469,4 +469,3 @@ for (var i = 0; i < len; i++) {
   data = JSON.parse(data);
   vp_load(vpElement, data, false);  
 }
-f17426
