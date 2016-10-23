@@ -469,3 +469,5 @@ for (var i = 0; i < len; i++) {
   data = JSON.parse(data);
   vp_load(vpElement, data, false);  
 }
+
+// Oct 23
