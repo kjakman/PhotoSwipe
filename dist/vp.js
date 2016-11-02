@@ -197,11 +197,22 @@ var openPhotoSwipe = function(cid, index, galleryElement, disableAnimation, from
         // isFake    - true when content is added to fake caption container
         //             (used to get size of next or previous caption)
     
+        /**
         if(!item.title) {
             captionEl.children[0].innerHTML = '';
             return false;
         }
-        captionEl.children[0].innerHTML = item.title;
+        */
+
+        /** todo: use -1 for no, 1 for yes, 0 for unknown */
+        var available = parseInt(item.original_available);
+        var color = available ? '#0f0' : '#f00';
+        var dot = '<span style="color:' + color + '">&#x25cf;</span>';
+        
+        var year = item.original_year ? '(' + item.original_year + ')' : '';
+        var captionAr = [dot, item.title, year, item.artist_name]
+        console.log("CaptionAr:", captionAr);
+        captionEl.children[0].innerHTML = captionAr.join(' ');
         return true;
     },
     
@@ -526,3 +537,5 @@ for (var i = 0; i < len; i++) {
   data = JSON.parse(data);
   vp_load(vpElement, data, false);  
 }
+
+// Oct 23
