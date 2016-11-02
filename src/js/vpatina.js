@@ -482,6 +482,6 @@ for (var i = 0; i < len; i++) {
   vp_load(vpElement, data, false);  
 }
 
-var test = 'kj-v0.0.1';
+var test = 'kj-v0.0.2';
 
 // Oct 23
