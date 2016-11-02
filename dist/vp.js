@@ -197,6 +197,7 @@ var openPhotoSwipe = function(cid, index, galleryElement, disableAnimation, from
         // isFake    - true when content is added to fake caption container
         //             (used to get size of next or previous caption)
     
+        // test 123
         /**
         if(!item.title) {
             captionEl.children[0].innerHTML = '';
