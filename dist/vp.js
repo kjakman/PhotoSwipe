@@ -206,6 +206,7 @@ var openPhotoSwipe = function(cid, index, galleryElement, disableAnimation, from
         */
 
         /** todo: use -1 for no, 1 for yes, 0 for unknown */
+        var test = 'foobar';
         var available = parseInt(item.original_available);
         var color = available ? '#0f0' : '#f00';
         var dot = '<span style="color:' + color + '">&#x25cf;</span>';
