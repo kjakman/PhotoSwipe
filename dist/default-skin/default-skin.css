@@ -1,6 +1,7 @@
 /*! PhotoSwipe Default UI CSS by Dmitry Semenov | photoswipe.com | MIT license */
 /*
 
+  Modified for vPatina by Kjetil Larsen on 19 January 2017 15:55
 	Contents:
 
 	1. Buttons
@@ -56,27 +57,27 @@
   width: 44px;
   height: 44px; }
 
-@media (-webkit-min-device-pixel-ratio: 1.1), (-webkit-min-device-pixel-ratio: 1.09375), (min-resolution: 105dpi), (min-resolution: 1.1dppx) {
-  /* Serve SVG sprite if browser supports SVG and resolution is more than 105dpi */
-  .pswp--svg .pswp__button,
-  .pswp--svg .pswp__button--arrow--left:before,
-  .pswp--svg .pswp__button--arrow--right:before {
-    background-image: url(default-skin.svg); }
-  .pswp--svg .pswp__button--arrow--left,
-  .pswp--svg .pswp__button--arrow--right {
-    background: none; } }
+/* Serve SVG sprite if browser supports SVG and resolution is more than 105dpi */
+/** turn this off for now 
+@media (-webkit-min-device-pixel-ratio: 1.1),  (min-resolution: 105dpi), (min-resolution: 1.1dppx) {
 
+    .pswp--svg .pswp__button,
+    .pswp--svg .pswp__button--arrow--left:before,
+	.pswp--svg .pswp__button--arrow--right:before {
+        background-image: url(default-skin.svg);
+    }
+
+  .pswp--svg .pswp__button--arrow--left,
+	.pswp--svg .pswp__button--arrow--right {
+		background: none;
+	}
+}
+*/
 .pswp__button--close {
   background-position: 0 -44px; }
 
 .pswp__button--share {
   background-position: -44px -44px; }
-
-.pswp__button--fs {
-  display: none; }
-
-.pswp--supports-fs .pswp__button--fs {
-  display: block; }
 
 .pswp--fs .pswp__button--fs {
   background-position: -44px 0; }
@@ -85,11 +86,25 @@
   display: none;
   background-position: -88px 0; }
 
+.pswp--zoomed-in .pswp__button--zoom {
+  background-position: -132px 0; }
+
+.pswp__button--arrow--left:before {
+  left: 6px;
+  background-position: -138px -44px; }
+
+.pswp__button--arrow--right:before {
+  right: 6px;
+  background-position: -94px -44px; }
+
 .pswp--zoom-allowed .pswp__button--zoom {
   display: block; }
 
-.pswp--zoomed-in .pswp__button--zoom {
-  background-position: -132px 0; }
+.pswp__button--fs {
+  display: none; }
+
+.pswp--supports-fs .pswp__button--fs {
+  display: block; }
 
 /* no arrows on touch screens */
 .pswp--touch .pswp__button--arrow--left,
@@ -124,14 +139,6 @@
   width: 32px;
   position: absolute; }
 
-.pswp__button--arrow--left:before {
-  left: 6px;
-  background-position: -138px -44px; }
-
-.pswp__button--arrow--right:before {
-  right: 6px;
-  background-position: -94px -44px; }
-
 /*
 
 	2. Share modal/popup and links
@@ -163,7 +170,28 @@
 .pswp__share-modal--hidden {
   display: none; }
 
-.pswp__share-tooltip {
+.pswp__share-tooltip a {
+  display: block;
+  padding: 8px 12px;
+  color: #000;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 18px; }
+  .pswp__share-tooltip a:hover {
+    text-decoration: none;
+    color: #000; }
+  .pswp__share-tooltip a:first-child {
+    /* round corners on the first/last list item */
+    border-radius: 2px 2px 0 0; }
+  .pswp__share-tooltip a:last-child {
+    border-radius: 0 0 2px 2px; }
+
+/* increase size of share links on touch devices */
+.pswp--touch .pswp__share-tooltip a {
+  padding: 16px 12px; }
+
+/** changed: vpatina */
+.vp__share-modal-content {
   z-index: 1620;
   position: absolute;
   background: #FFF;
@@ -171,7 +199,6 @@
   border-radius: 2px;
   display: block;
   width: auto;
-  right: 44px;
   -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
           box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
   -webkit-transform: translateY(6px);
@@ -181,21 +208,6 @@
           transition: transform 0.25s;
   -webkit-backface-visibility: hidden;
   will-change: transform; }
-  .pswp__share-tooltip a {
-    display: block;
-    padding: 8px 12px;
-    color: #000;
-    text-decoration: none;
-    font-size: 14px;
-    line-height: 18px; }
-    .pswp__share-tooltip a:hover {
-      text-decoration: none;
-      color: #000; }
-    .pswp__share-tooltip a:first-child {
-      /* round corners on the first/last list item */
-      border-radius: 2px 2px 0 0; }
-    .pswp__share-tooltip a:last-child {
-      border-radius: 0 0 2px 2px; }
 
 .pswp__share-modal--fade-in {
   opacity: 1; }
@@ -204,11 +216,7 @@
         -ms-transform: translateY(0);
             transform: translateY(0); }
 
-/* increase size of share links on touch devices */
-.pswp--touch .pswp__share-tooltip a {
-  padding: 16px 12px; }
-
-a.pswp__share--facebook:before {
+a.pswp__share--facebook-off:before {
   content: '';
   display: block;
   width: 0;
@@ -222,10 +230,10 @@ a.pswp__share--facebook:before {
   -moz-pointer-events: none;
   pointer-events: none; }
 
-a.pswp__share--facebook:hover {
+a.pswp__share--facebook-off:hover {
   background: #3E5C9A;
   color: #FFF; }
-  a.pswp__share--facebook:hover:before {
+  a.pswp__share--facebook-off:hover:before {
     border-bottom-color: #3E5C9A; }
 
 a.pswp__share--twitter:hover {
@@ -424,8 +432,8 @@ a.pswp__share--download:hover {
   position: absolute;
   left: 0;
   top: 0;
-  height: 44px;
-  width: 100%; }
+  width: 100%;
+  height: 54px; }
 
 .pswp__caption,
 .pswp__top-bar,

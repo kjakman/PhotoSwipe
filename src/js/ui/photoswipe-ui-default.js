@@ -3,7 +3,7 @@
 * UI on top of main sliding area (caption, arrows, close button, etc.).
 * Built just using public methods/properties of PhotoSwipe.
 * 
-* Changed by Kjetil Larsen (github@kjakman.com) to integrate with vPatina.com and add buttons: Like, Chat, User, and Info
+* Changed by Kjetil Larsen on Jan 19 2017 16:19 (github@kjakman.com) to integrate with vPatina.com and add buttons: Like, Chat, Email, User, and Info
 * v 0.0.1
 */
 
@@ -101,8 +101,8 @@ var PhotoSwipeUI_Default =
 		_blockControlsTapTimeout;
 
 
-
-	var _onControlsTap = function(e) {
+		var _onControlsTap = function(e) {
+	  
 			if(_blockControlsTap) {
 				return true;
 			}
@@ -191,7 +191,7 @@ var PhotoSwipeUI_Default =
 			}
 			
 			if(!_shareModalHidden) {
-				_updateShareURLs();
+				//_updateShareURLs();
 			}
 			return false;
 		},
@@ -203,7 +203,7 @@ var PhotoSwipeUI_Default =
 			pswp.shout('shareLinkClick', e, target);
 
 			if(!target.href) {
-				return false;
+				return false;                                                                                                                    
 			}
 
 			if( target.hasAttribute('download') ) {
@@ -220,6 +220,41 @@ var PhotoSwipeUI_Default =
 			
 			return false;
 		},
+		_updateShareUser = function() { /** vPatina */
+		  var share_modal_content = document.getElementById('vp__share-modal-content');           
+      share_modal_content.innerHTML = vp_container("User info comes here...", 'vp__user_container');
+		},
+		_updateShareChat = function() { /** vPatina */
+		  var share_modal_content = document.getElementById('vp__share-modal-content');           
+      share_modal_content.innerHTML = vp_container("Chat info comes here...", 'vp__chat_container');
+		},
+		_updateShareCalendar = function() { /** vPatina */
+		  var share_modal_content = document.getElementById('vp__share-modal-content');           
+      share_modal_content.innerHTML = vp_container(vp_infocalendar(g_pswp.cid), 'vp__calendar_container');
+      addtocalendar.load();
+		},
+		_updateShareContact = function() { /** vPatina */
+		  var link = vp_contact_link(g_pswp.cid);
+      console.log("opening iframe link=" + link);
+		  var share_modal_content = document.getElementById('vp__share-modal-content');
+      share_modal_content.innerHTML = vp_iframe(link);
+		},
+		_updateShareInfo = function() { /** vPatina */
+		  var share_modal_content = document.getElementById('vp__share-modal-content');           
+      share_modal_content.innerHTML = vp_infotabs();        
+      var vpdata = g_pswp.getCurrentData(g_pswp.cid) || {};
+      vp_update_info(vpdata);          
+    },
+		_updateShareMap = function() { /** vPatina */
+		  var share_modal_content = document.getElementById('vp__share-modal-content');		  
+      share_modal_content.innerHTML = vp_container(vp_infomap(g_pswp.vpdata), 'vp__map_container');
+      var vpdata = g_pswp.getCurrentData(g_pswp.cid) || {};
+      var curator = vpdata.curator || {};
+      var lat = curator.location_lat;
+      var lng = curator.location_long;
+      var has_map = Math.abs(lat) > 0 && Math.abs(lng) > 0;
+      if(has_map) initModalMap('mapCanvas');      
+    },
 		_updateShareURLs = function() {
 			var shareButtonOut = '',
 				shareButtonData,
@@ -249,7 +284,10 @@ var PhotoSwipeUI_Default =
 					shareButtonOut = _options.parseShareButtonOut(shareButtonData, shareButtonOut);
 				}
 			}
-			_shareModal.children[0].innerHTML = shareButtonOut;
+			_shareModal.children[0].innerHTML = '<div class="pswp__share-tooltip">' + shareButtonOut + '</div>';
+		  //var share_modal_content = document.getElementById('vp__share-modal-content');           
+      //share_modal_content.innerHTML = vp_container(shareButtonOut, 'pswp__share-tooltip');    
+			
 			_shareModal.children[0].onclick = _openWindowPopup;
 
 		},
@@ -416,7 +454,6 @@ var PhotoSwipeUI_Default =
 		};
 
 
-
 	var _uiElements = [
 		{ 
 			name: 'caption', 
@@ -436,15 +473,16 @@ var PhotoSwipeUI_Default =
 			} 
 		},
 		{ 
-			name: 'button--share', 
+			name: 'button--share',                   
 			option: 'shareEl',
 			onInit: function(el) { 
 				_shareButton = el;
 			},
 			onTap: function() {
 				_toggleShareModal();
+				_updateShareURLs();				
 			} 
-		},
+		},		
 		{ 
 			name: 'button--zoom', 
 			option: 'zoomEl',
@@ -495,36 +533,77 @@ var PhotoSwipeUI_Default =
       name: 'button--like',
       option: 'likeEl',
       onTap: function() {
-        console.log("Tap on like");
-        var likeBtn = document.getElementById("likeBtn");  
-        likeBtn.click();
+        var data = g_pswp.getCurrentData(g_pswp.cid);
+        if(g_user_id) {
+          console.log("click on like by user");
+          g_pswp.like(g_pswp.cid, data);      
+        }
+      }      
+    },
+    {
+      name: 'button--info',
+      option: 'infoEl',
+			onInit: function(el) { 
+				_shareButton = el;
+			},
+      onTap: function() {
+				_toggleShareModal();
+				_updateShareInfo();				
+      }
+    },
+    {
+      name: 'button--calendar',
+      option: 'calendarEl',
+			onInit: function(el) { 
+				_shareButton = el;
+			},
+      onTap: function() {
+				_toggleShareModal();
+				_updateShareCalendar();
       }
     },
     {
       name: 'button--user',
       option: 'userEl',
+			onInit: function(el) { 
+				_shareButton = el;
+			},
       onTap: function() {
-        console.log("Tap on user");
-        var userBtn = document.getElementById("userBtn");  
-        userBtn.click();
+				_toggleShareModal();
+				_updateShareUser();				
       }
     },
     {
-      name: 'button--info',
-      option: 'infoEl',
+      name: 'button--contact',
+      option: 'contactEl',
+			onInit: function(el) { 
+				_shareButton = el;
+			},
       onTap: function() {
-        console.log("Tap on info");
-        var infoBtn = document.getElementById("infoBtn");  
-        infoBtn.click();
+				_toggleShareModal();
+				_updateShareContact();				
+      }
+    },
+    {
+      name: 'button--map',
+      option: 'mapEl',
+			onInit: function(el) { 
+				_shareButton = el;
+			},
+      onTap: function() {
+				_toggleShareModal();
+				_updateShareMap();				
       }
     },
     {
       name: 'button--chat',
       option: 'chatEl',
+			onInit: function(el) { 
+				_shareButton = el;
+			},
       onTap: function() {
-        console.log("Tap on chat");
-        var chatBtn = document.getElementById("chatBtn");  
-        chatBtn.click();
+				_toggleShareModal();
+				_updateShareChat();				
       }
     }
 		/** End vPatina */
@@ -758,7 +837,11 @@ var PhotoSwipeUI_Default =
 	ui.onGlobalTap = function(e) {
 		e = e || window.event;
 		var target = e.target || e.srcElement;
-
+		
+		if(framework.hasClass(target, 'pswp__top-bar')) {
+		  console.log("tap on top bar");
+		  return;
+		}
 		if(_blockControlsTap) {
 			return;
 		}

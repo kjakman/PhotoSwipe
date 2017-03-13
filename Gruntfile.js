@@ -189,7 +189,8 @@ module.exports = function(grunt) {
       },      
       css: {
         // the files to concatenate
-        src: ['dist/photoswipe.css', 'src/css/vpatina.css'],
+        src: ['src/css/base.css', 'src/css/vpatina.css'],
+        //src: ['dist/photoswipe.css', 'dist/default-skin/default-skin.css', 'src/css/base.css', 'src/css/vpatina.css'],
         // the location of the resulting JS file
         dest: 'dist/vp.css'
       }    

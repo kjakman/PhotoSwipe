@@ -2,6 +2,7 @@
 
 /*
 
+  Modified for vPatina by Kjetil Larsen on 19 January 2017 15:55
 	Contents:
 
 	1. Buttons
@@ -74,20 +75,22 @@
 	height: 44px;
 }
 
+/* Serve SVG sprite if browser supports SVG and resolution is more than 105dpi */
+/** turn this off for now 
 @media (-webkit-min-device-pixel-ratio: 1.1),  (min-resolution: 105dpi), (min-resolution: 1.1dppx) {
 
-	/* Serve SVG sprite if browser supports SVG and resolution is more than 105dpi */
     .pswp--svg .pswp__button,
     .pswp--svg .pswp__button--arrow--left:before,
 	.pswp--svg .pswp__button--arrow--right:before {
         background-image: url(#{$pswp__assets-path}default-skin.svg);
     }
 
-    .pswp--svg .pswp__button--arrow--left,
+  .pswp--svg .pswp__button--arrow--left,
 	.pswp--svg .pswp__button--arrow--right {
 		background: none;
 	}
 }
+*/
 
 .pswp__button--close {
 	background-position: 0 -44px;
@@ -95,14 +98,6 @@
 
 .pswp__button--share {
 	background-position: -44px -44px;
-}
-
-.pswp__button--fs {
-	display: none;
-}
-
-.pswp--supports-fs .pswp__button--fs {
-	display: block;
 }
 
 .pswp--fs .pswp__button--fs {
@@ -114,12 +109,31 @@
 	background-position: -88px 0;
 }
 
+.pswp--zoomed-in .pswp__button--zoom {
+	background-position: -132px 0;
+}
+
+.pswp__button--arrow--left:before {
+	left: 6px;
+	background-position: -138px -44px;
+}
+
+.pswp__button--arrow--right:before {
+	right: 6px;
+	background-position: -94px -44px;
+}
+
+
 .pswp--zoom-allowed .pswp__button--zoom {
 	display: block;
 }
 
-.pswp--zoomed-in .pswp__button--zoom {
-	background-position: -132px 0;
+.pswp__button--fs {
+	display: none;
+}
+
+.pswp--supports-fs .pswp__button--fs {
+	display: block;
 }
 
 /* no arrows on touch screens */
@@ -162,16 +176,6 @@
 	position: absolute;
 }
 
-.pswp__button--arrow--left:before {
-	left: 6px;
-	background-position: -138px -44px;
-}
-
-.pswp__button--arrow--right:before {
-	right: 6px;
-	background-position: -94px -44px;
-}
-
 
 /*
 
@@ -207,20 +211,6 @@
 }
 
 .pswp__share-tooltip {
-	z-index: $pswp__root-z-index + 120;
-	position: absolute;
-	background: #FFF;
-	top: 56px;
-	border-radius: 2px;
-	display: block;
-	width: auto;
-	right: 44px;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
-	transform: translateY(6px);
-	transition: transform 0.25s;
-	-webkit-backface-visibility: hidden;
-	will-change: transform;
-
 	a {
 		display: block;
 		padding: 8px 12px;
@@ -246,6 +236,29 @@
 	}
 }
 
+
+/* increase size of share links on touch devices */
+.pswp--touch .pswp__share-tooltip a {
+	padding: 16px 12px;
+}
+
+/** changed: vpatina */
+.vp__share-modal-content {
+	z-index: $pswp__root-z-index + 120;
+	position: absolute;
+	background: #FFF;
+	top: 56px;
+	border-radius: 2px;
+	display: block;
+	width: auto;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+	transform: translateY(6px);
+	transition: transform 0.25s;
+	-webkit-backface-visibility: hidden;
+	will-change: transform;
+
+}
+
 .pswp__share-modal--fade-in {
 	opacity: 1;
 
@@ -254,12 +267,7 @@
 	}
 }
 
-/* increase size of share links on touch devices */
-.pswp--touch .pswp__share-tooltip a {
-	padding: 16px 12px;
-}
-
-a.pswp__share--facebook {
+a.pswp__share--facebook-off {
 	&:before {
 		content: '';
 		display: block;
@@ -493,8 +501,8 @@ a.pswp__share--download {
 	position: absolute;
 	left: 0;
 	top: 0;
-	height: 44px;
 	width: 100%;
+  height: 54px;
 }
 
 .pswp__caption,
