@@ -1,14 +1,16 @@
-/*! PhotoSwipe Default UI - 4.1.1 - 2017-03-13
+/*! PhotoSwipe Default UI - 4.1.1 - 2018-06-09
 * http://photoswipe.com
-* Copyright (c) 2017 Dmitry Semenov; */
+* Copyright (c) 2018 Dmitry Semenov; */
 /**
 *
 * UI on top of main sliding area (caption, arrows, close button, etc.).
 * Built just using public methods/properties of PhotoSwipe.
 * 
-* Changed by Kjetil Larsen on Jan 19 2017 16:19 (github@kjakman.com) to integrate with vPatina.com and add buttons: Like, Chat, Email, User, and Info
-* v 0.0.1
+* Changed by Kjetil Larsen on March 19 2017 16:19 (github@kjakman.com) to integrate with vPatina.com and add buttons: Like, Chat, Email, User, and Info
+* v 0.0.2 
 */
+
+//console.log("\n\nPS UI default v0.0.2 \n\n\n");
 
 (function (root, factory) { 
 	if (typeof define === 'function' && define.amd) {
@@ -28,6 +30,7 @@ var PhotoSwipeUI_Default =
  function(pswp, framework) {
 
 	var ui = this;
+  var _myModal = document.getElementById("vp__my_modal");	
 	var _overlayUIUpdated = false,
 		_controlsVisible = true,
 		_fullscrenAPI,
@@ -38,9 +41,11 @@ var PhotoSwipeUI_Default =
 		_shareButton,
 		_shareModal,
 		_shareModalHidden = true,
+		_myModalHidden = true,
 		_initalCloseOnScrollValue,
 		_isIdle,
 		_listen,
+		_reloadPhotoswipeOnCloseModal, /** vPatina */
 
 		_loadingIndicator,
 		_loadingIndicatorHidden,
@@ -172,6 +177,30 @@ var PhotoSwipeUI_Default =
 		_toggleShareModalClass = function() {
 			_togglePswpClass(_shareModal, 'share-modal--hidden', _shareModalHidden);
 		},
+		_toggleMyModalClass = function() {
+			_togglePswpClass(_myModal, 'share-modal--hidden', _myModalHidden);
+		},
+		_toggleMyModal = function() { /** vPatina */
+		  console.log("toggle my modal hidden=" + _myModalHidden);
+			_myModalHidden = _myModal.style.display == "block" ? false : true;
+  		  
+			if(_myModalHidden) {
+			  console.log("show my modal v2");
+				setTimeout(function() {
+				  console.log("showing 30 ms later");
+				  _myModal.style.display = "block";
+				}, 30);
+			  			  
+			} else {
+			  console.log("hide my modal");
+				setTimeout(function() {
+				  console.log("hiding 30 ms later");
+				  _myModal.style.display = "none";
+				}, 30);				  
+			}
+			
+			return false;
+		},
 		_toggleShareModal = function() {
 
 			_shareModalHidden = !_shareModalHidden;
@@ -181,6 +210,7 @@ var PhotoSwipeUI_Default =
 				_toggleShareModalClass();
 				setTimeout(function() {
 					if(!_shareModalHidden) {
+					  console.log("Show modal reload=" + _reloadPhotoswipeOnCloseModal);
 						framework.addClass(_shareModal, 'pswp__share-modal--fade-in');
 					}
 				}, 30);
@@ -188,7 +218,14 @@ var PhotoSwipeUI_Default =
 				framework.removeClass(_shareModal, 'pswp__share-modal--fade-in');
 				setTimeout(function() {
 					if(_shareModalHidden) {
+					  console.log("Hide modal reload=" + _reloadPhotoswipeOnCloseModal);
 						_toggleShareModalClass();
+					  if(_reloadPhotoswipeOnCloseModal) {
+					    var disableAnimation = false;
+					    var fromURL = '';
+					    console.log("Reloading...");
+					    reloadPhotoswipe(g_pswp.cid, pswp.getCurrentIndex(), g_pswp.galleryElement, disableAnimation, fromURL);
+					  }
 					}
 				}, 300);
 			}
@@ -204,14 +241,17 @@ var PhotoSwipeUI_Default =
 			var target = e.target || e.srcElement;
 
 			pswp.shout('shareLinkClick', e, target);
+      console.log("_openWindowPopup ",  target);
 
 			if(!target.href) {
+			  console.log("no href..");
 				return false;                                                                                                                    
 			}
 
 			if( target.hasAttribute('download') ) {
 				return true;
 			}
+      console.log("ok, opening " + target.href);
 
 			window.open(target.href, 'pswp_share', 'scrollbars=yes,resizable=yes,toolbar=no,'+
 										'location=yes,width=550,height=420,top=100,left=' + 
@@ -224,8 +264,13 @@ var PhotoSwipeUI_Default =
 			return false;
 		},
 		_updateShareUser = function() { /** vPatina */
-		  var share_modal_content = document.getElementById('vp__share-modal-content');           
-      share_modal_content.innerHTML = vp_container("User info comes here...", 'vp__user_container');
+		  //var share_modal_content = document.getElementById('vp__share-modal-content');           
+      //share_modal_content.innerHTML = vp_container("User info comes here...", 'vp__user_container');
+      
+		  // var link = vp_user_link();
+		  var link = "/login/"; 
+		  var share_modal_content = document.getElementById('vp__share-modal-content');
+      share_modal_content.innerHTML = vp_iframe(link);      
 		},
 		_updateShareChat = function() { /** vPatina */
 		  var share_modal_content = document.getElementById('vp__share-modal-content');           
@@ -243,10 +288,17 @@ var PhotoSwipeUI_Default =
       share_modal_content.innerHTML = vp_iframe(link);
 		},
 		_updateShareInfo = function() { /** vPatina */
-		  var share_modal_content = document.getElementById('vp__share-modal-content');           
-      share_modal_content.innerHTML = vp_infotabs();        
-      var vpdata = g_pswp.getCurrentData(g_pswp.cid) || {};
-      vp_update_info(vpdata);          
+		  //var share_modal_content = document.getElementById('vp__share-modal-content');           
+		  var share_modal_content = document.getElementById('vp__my-modal-content');           
+      if(1) {
+        share_modal_content.innerHTML = vp_infotabs();        
+        var vpdata = g_pswp.getCurrentData(g_pswp.cid) || {};
+        vp_update_info(vpdata);
+        
+        var tab1 = document.getElementById('vp__tab1');           
+        tab1.click();
+        console.log("clicking tab1");
+      }
     },
 		_updateShareMap = function() { /** vPatina */
 		  var share_modal_content = document.getElementById('vp__share-modal-content');		  
@@ -264,7 +316,8 @@ var PhotoSwipeUI_Default =
 				shareURL,
 				image_url,
 				page_url,
-				share_text;
+				share_text,
+				obj_id; /** vpatina */
 
 			for(var i = 0; i < _options.shareButtons.length; i++) {
 				shareButtonData = _options.shareButtons[i];
@@ -272,10 +325,12 @@ var PhotoSwipeUI_Default =
 				image_url = _options.getImageURLForShare(shareButtonData);
 				page_url = _options.getPageURLForShare(shareButtonData);
 				share_text = _options.getTextForShare(shareButtonData);
+				obj_id = _options.getObjIdForShare(shareButtonData); /** vpatina */
 
 				shareURL = shareButtonData.url.replace('{{url}}', encodeURIComponent(page_url) )
 									.replace('{{image_url}}', encodeURIComponent(image_url) )
 									.replace('{{raw_image_url}}', image_url )
+									.replace('{{obj_id}}', obj_id )  /** vpatina */
 									.replace('{{text}}', encodeURIComponent(share_text) );
 
 				shareButtonOut += '<a href="' + shareURL + '" target="_blank" '+
@@ -482,6 +537,7 @@ var PhotoSwipeUI_Default =
 				_shareButton = el;
 			},
 			onTap: function() {
+				_reloadPhotoswipeOnCloseModal = 0;				
 				_toggleShareModal();
 				_updateShareURLs();				
 			} 
@@ -517,10 +573,15 @@ var PhotoSwipeUI_Default =
 			name: 'button--fs', 
 			option: 'fullscreenEl',
 			onTap: function() {  
+			  var _infoBtn = document.getElementById("vp__infoBtn");	
 				if(_fullscrenAPI.isFullscreen()) {
 					_fullscrenAPI.exit();
+				  _infoBtn.style.display = "block";				  
 				} else {
+				  /** hide info button */
+				  _infoBtn.style.display = "none";				  
 					_fullscrenAPI.enter();
+					
 				}
 			} 
 		},
@@ -537,9 +598,23 @@ var PhotoSwipeUI_Default =
       option: 'likeEl',
       onTap: function() {
         var data = g_pswp.getCurrentData(g_pswp.cid);
+        var item = data.item;
+				_reloadPhotoswipeOnCloseModal = 0;				
+        
+        g_pswp.reload = 1;
         if(g_user_id) {
-          console.log("click on like by user");
+          console.log("click on like by user " + g_user_id);
           g_pswp.like(g_pswp.cid, data);      
+        } else {
+          _reloadPhotoswipeOnCloseModal = 1;				
+          var link = vp_follow_link(data.curator_id, item);
+          console.log("click on like - no user curator:" + data.curator_id + " mid=" + item.media_id + " link=" + link);
+          if(!link) return;
+          
+          var share_modal_content = document.getElementById('vp__share-modal-content');
+          share_modal_content.innerHTML = vp_iframe(link);      
+          _toggleShareModal();
+          
         }
       }      
     },
@@ -550,7 +625,9 @@ var PhotoSwipeUI_Default =
 				_shareButton = el;
 			},
       onTap: function() {
-				_toggleShareModal();
+        _reloadPhotoswipeOnCloseModal = 0;		
+        console.log("infoEl tap");
+				_toggleMyModal();
 				_updateShareInfo();				
       }
     },
@@ -561,6 +638,7 @@ var PhotoSwipeUI_Default =
 				_shareButton = el;
 			},
       onTap: function() {
+        _reloadPhotoswipeOnCloseModal = 0;				
 				_toggleShareModal();
 				_updateShareCalendar();
       }
@@ -572,6 +650,7 @@ var PhotoSwipeUI_Default =
 				_shareButton = el;
 			},
       onTap: function() {
+        _reloadPhotoswipeOnCloseModal = 1;				
 				_toggleShareModal();
 				_updateShareUser();				
       }
@@ -581,10 +660,21 @@ var PhotoSwipeUI_Default =
       option: 'contactEl',
 			onInit: function(el) { 
 				_shareButton = el;
+        //_shareButton.onclick = _openWindowPopup;
+				
 			},
       onTap: function() {
-				_toggleShareModal();
-				_updateShareContact();				
+        _reloadPhotoswipeOnCloseModal = 1;
+				if(1) {
+          var link = vp_contact_link(g_pswp.cid);
+          //_shareButton.innerHTML = "<a href=''></a>";
+          console.log("opening popup link=" + link + " el:", _shareButton);
+          vp_popup(link);
+          //_shareButton.setAttribute('data-href', link);
+				} else {
+          _toggleShareModal();
+          _updateShareContact();
+        }
       }
     },
     {
@@ -594,6 +684,7 @@ var PhotoSwipeUI_Default =
 				_shareButton = el;
 			},
       onTap: function() {
+        _reloadPhotoswipeOnCloseModal = 0;				
 				_toggleShareModal();
 				_updateShareMap();				
       }
@@ -605,6 +696,7 @@ var PhotoSwipeUI_Default =
 				_shareButton = el;
 			},
       onTap: function() {
+        _reloadPhotoswipeOnCloseModal = 0;				
 				_toggleShareModal();
 				_updateShareChat();				
       }
@@ -841,6 +933,8 @@ var PhotoSwipeUI_Default =
 		e = e || window.event;
 		var target = e.target || e.srcElement;
 		
+		console.log('tap target=', target);
+		
 		if(framework.hasClass(target, 'pswp__top-bar')) {
 		  console.log("tap on top bar");
 		  return;
@@ -966,7 +1060,7 @@ var PhotoSwipeUI_Default =
 			};
 			api.exit = function() { 
 				_options.closeOnScroll = _initalCloseOnScrollValue;
-
+				
 				return document[this.exitK](); 
 
 			};

@@ -1,4 +1,4 @@
-/*! vPatina JS: 0.1.2 2016-12-19
+/*! vPatina JS: 0.1.3 2017-03-19
 * https://www.vpatina.com
 * Copyright (c) 2016 vPatina BV; */
 
@@ -54,9 +54,7 @@ function vp_update_info(vpdata) {
   
   if(document.getElementById("vp__tab1")) {
     //document.getElementById("vp__tab1").click(); // open first tab 
-    var firstTab = document.getElementById("vp__tab1-content");
-    firstTab.style.display = "block";
-    
+        
     if(g_popup_buttons && g_popup_tabs) {
       
       //console.log("show/hide tabs according to popup tabs:", g_popup_tabs);
@@ -68,9 +66,9 @@ function vp_update_info(vpdata) {
       } 
       
       document.getElementById('vp__tab1-content').innerHTML = vp_artwork_info(vpdata);       
-      document.getElementById('vp__tab2-content').innerHTML = content = vp_tab_content(artist);
-      document.getElementById('vp__tab3-content').innerHTML = content = vp_tab_content(collection);
-      document.getElementById('vp__tab4-content').innerHTML = content = vp_tab_content(curator);
+      document.getElementById('vp__tab2-content').innerHTML = content = vp_tab_content(artist, 'vp__tab2-inner-content');
+      document.getElementById('vp__tab3-content').innerHTML = content = vp_tab_content(collection, 'vp__tab3-inner-content');
+      document.getElementById('vp__tab4-content').innerHTML = content = vp_tab_content(curator, 'vp__tab4-inner-content');
   
       var tab1 = document.getElementById('vp__tab1');
       var tab2 = document.getElementById('vp__tab2');
@@ -81,22 +79,22 @@ function vp_update_info(vpdata) {
       tab2.style.display = inArray('artist', g_popup_tabs) ? "block" : "none";
       tab3.style.display = inArray('exhibition', g_popup_tabs) ? "block" : "none";
       tab4.style.display = inArray('gallery', g_popup_tabs) ? "block" : "none";
-  
+
       return;                        
     }
   }
 }
 
 
-function vp_tab_content(object) {
+function vp_tab_content(object, div_id) {
   var title = object.display_name || object.title || '';
   var desc = object.description;
   var photo = object.image ? "<br><img src='" + object.image + "' width='150px'><br>" : "";
   var content = '';
   if(title) content = content + "<h4>" + title + "</h4>";
   if(photo) content = content + photo;
-  if(desc)  content = content + "<div class='vp__tab-inner-content'><p>" + desc + "</p></div>";
-  return content;;               
+  if(desc)  content = content + "<div class='vp__tab-inner-content' id='" + div_id + "'><p>" + desc + "</p></div>";
+  return content;               
 }  
 
 function vp_artwork_info(vpdata) {
@@ -155,6 +153,13 @@ function vp_artwork_info(vpdata) {
 // 0 (default) = all 
 // 1: tab 
 // 2: mail
+
+function vp_artist_name(vpdata, artist_id) {
+  var artists = vpdata.artists;
+  var artist = artists && artist_id ? artists[artist_id] : null;
+  var artist_name = artist ? artist.display_name : "Unknown arist";
+  return artist_name;
+}
 
 function vp_caption(vpdata, item, context) {
   if(typeof context == "undefined") var context = 0;
@@ -338,12 +343,12 @@ function vp_load(element, data, reload) {
         g_cids[cid] = 2; // success
 
         var status = g_cids[cid];
-        var plugin_ids = g_keys[key];
+        var plugin_ids = g_keys[key] || [];
         var len = plugin_ids.length;
         
-        console.log("Done. Loaded plugin " + plugin_id + " ('" + cid + "') in " + elapsed + "ms (" + this_time + "ms) status=" + status + " data:", data, " g_cids", g_cids, " key=" + key + " plugin ids:", plugin_ids);
-        
-        console.log("Done. Loaded plugin " + plugin_id + " len=" + len + " ids:", plugin_ids);
+        //console.log("Done. Loaded plugin " + plugin_id + " ('" + cid + "') in " + elapsed + "ms (" + this_time + "ms) status=" + status + " data:", data, " g_cids", g_cids, " key=" + key + " plugin ids:", plugin_ids);        
+        //console.log("Done. Loaded plugin " + plugin_id + " len=" + len + " ids:", plugin_ids);
+        console.log("Done. Data:", json);
         
         if(len > 1) {
           // alert("More than one plugin for this data");
@@ -632,10 +637,12 @@ var openPhotoSwipe = function(cid, index, galleryElement, disableAnimation, from
     // {{text}}            - title
     // {{image_url}}       - encoded image url
     // {{raw_image_url}}   - raw image url
+    // {{obj_id}}          - media_collection_map ID (vpatina)
     shareButtons: [
         {id:'facebook', label:'Facebook', url:'https://www.facebook.com/sharer/sharer.php?u={{url}}'},
         {id:'twitter', label:'Tweet', url:'https://twitter.com/intent/tweet?text={{text}}&url={{url}}'},
-        {id:'pinterest', label:'Pin it', url:'http://www.pinterest.com/pin/create/button/?url={{url}}&media={{image_url}}&description={{text}}'}
+        {id:'pinterest', label:'Pin it', url:'http://www.pinterest.com/pin/create/button/?url={{url}}&media={{image_url}}&description={{text}}'},
+        {id:'email', label:'E-mail', url: g_site_url + '/share/?url={{image_url}}&obj_type=media_collection_map&obj_id={{obj_id}}&_aid=10&template=mail/mail-artwork.html&controller=gallery_artworks'}        
         //{id:'download', label:'Download image', url:'{{raw_image_url}}', download:true}
     ],
     
@@ -650,7 +657,6 @@ var openPhotoSwipe = function(cid, index, galleryElement, disableAnimation, from
         // `pswp` is the gallery instance object,
         // you should define it by yourself
         // 
-        // return "http://test.vpatina.com/user/17426/vault/1130/title_image/image/big/deathtostock_clementine4.jpg";
         var vpdata = g_pswp.getCurrentData(cid) || {};
         var item = vpdata.item;
         //console.log("sharing using global g_pswp link=" + item.href + " item=",item);
@@ -663,6 +669,7 @@ var openPhotoSwipe = function(cid, index, galleryElement, disableAnimation, from
         var vpdata = g_pswp.getCurrentData(cid) || {};
         var item = vpdata.item;
         var link = item.link;
+        
         var sharer_id = g_sharer_id ? g_sharer_id : 1;
         var tail = "_aid=" + sharer_id;
         link = link.indexOf('?') > -1 ? link + "&" + tail : link + "?" + tail; 
@@ -674,8 +681,15 @@ var openPhotoSwipe = function(cid, index, galleryElement, disableAnimation, from
         var vpdata = g_pswp.getCurrentData(cid) || {};
         var item = vpdata.item;
         var caption = vp_caption(json, item, 2);
-        //console.log("sharing using global g_pswp caption=" + caption);
+        //console.log("getTextForShare: item=",item);
+        //logStackTrace(5);
         return caption;
+    },
+    getObjIdForShare: function( shareButtonData ) {
+        var vpdata = g_pswp.getCurrentData(cid) || {};
+        var item = vpdata.item;
+        console.log("getObjId for share: item=",item," id=", item.map_id);
+        return item.map_id;
     },
     
     // Parse output of share links
@@ -713,7 +727,17 @@ var openPhotoSwipe = function(cid, index, galleryElement, disableAnimation, from
   if(disableAnimation) {
     options.showAnimationDuration = 0;
   }
+  
+  /** added vPatina */
+  options.escKey = true;
+  options.closeOnScroll = false;
+  options.closeOnVerticalDrag = false;
+  options.pinchToClose = false;
 
+  options.clickToCloseNonZoomable = false;
+  options.tapToClose = false;
+  options.showAnimationDuration = 0;
+  
   //console.log("Start PS with options:",options);
   // Pass data to PhotoSwipe and initialize it
 
@@ -725,12 +749,15 @@ var openPhotoSwipe = function(cid, index, galleryElement, disableAnimation, from
   g_pswp = gallery;
   g_pswp.cid = cid;
   g_pswp.vpdata = json;   
-
+  g_pswp.galleryElement = galleryElement; 
            
   var content = ' [empty] ';     
-                                                                            
 
-  
+  g_pswp.listen('close', function() {
+    console.log("closing gallery");
+    vp__close_modal();
+  });
+                                                                              
   //console.log("\n\n\naddress:"  + address_formatted + "\n\n\n lat=" + lat + " lng=" + lng );
   //console.log("gh: curator=", curator);
 
@@ -792,6 +819,8 @@ var openPhotoSwipe = function(cid, index, galleryElement, disableAnimation, from
   
   */
   
+  /** move to photoswipe-ui-default.js */
+  /**
   var likeBtn = document.getElementById("likeBtn");
   // When the user clicks the button, open the modal
   likeBtn.onclick = function() {
@@ -803,9 +832,14 @@ var openPhotoSwipe = function(cid, index, galleryElement, disableAnimation, from
       g_pswp.like(cid, data);
       
     } else {
+		  var link = "/login/"; 
+		  var share_modal_content = document.getElementById('vp__share-modal-content');
+      share_modal_content.innerHTML = vp_iframe(link);      
+      //_toggleShareModal();
       console.log("click on like - no user");
     }
   }
+  */
   
   var userBtn = document.getElementById("userBtn");
   if(!g_user_id) {
@@ -844,7 +878,7 @@ var openPhotoSwipe = function(cid, index, galleryElement, disableAnimation, from
     div.innerHTML = comment;
     var text = div.textContent || div.innerText || "";
 
-    var infoBtn = document.getElementById("infoBtn");
+    var infoBtn = document.getElementById("vp__infoBtn");
     //console.log('comment=' + comment);
     //console.log('text="' + text + '" len=' + text.length);
     if(1 || text.length > 2) { // comment stripped of tags
@@ -961,7 +995,7 @@ function reloadPhotoswipe(cid, index, galleryElement, disableAnimation, fromURL)
   var json = g_list[key];
   g_cid = cid;
   items = json.psitems;
-  //console.log("Reloading ps cid=" + cid + " index=" + index);
+  console.log("Reloading ps cid=" + cid + " index=" + index + " on element:", galleryElement);
   
   vp_load(json.element, json.data, true);  
   
@@ -1051,7 +1085,10 @@ function vp_get_date(datetime, time, timezone) {
   console.log("dt:", datetime);
   console.log("t:", t);
 
-  if(time && !timezone) return t[3] + ':' + t[4];
+  var time_str = t[3] + ':' + t[4];
+  if(time) return time_str;
+  
+  if(time && !timezone) return time_str;
   
   var date = new Date(Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5])); // Apply each element to the Date function
   var monthNames = [
@@ -1069,6 +1106,7 @@ function vp_get_date(datetime, time, timezone) {
   
   console.log(day, monthNames[monthIndex], year, hour, minute);
   if(time) {
+    //return time_str;
     return hour + ':' + minute;
   } else {
     return day + ' ' + monthNames[monthIndex] + ' ' + year;
@@ -1079,7 +1117,7 @@ function vp_event(event, curator) {
   var address_formatted = event.address_formatted || event.start_address;
   var address_anchor = '';
   if(address_formatted) {
-    var address_link = "http://maps.google.com/?q=" + encodeURIComponent(address_formatted);
+    var address_link = "https://maps.google.com/?q=" + encodeURIComponent(address_formatted);
     address_anchor = '<a href="' + address_link + '" target="new">' + 'View in Google Maps' + '</a>';
   }
   
@@ -1114,22 +1152,35 @@ function vp_event(event, curator) {
   return output;
 }
 
+function vp_follow_link(user_id, item) {
+  if(!user_id || !item || !item.media_id) return '';
+  return '/login/?ref=%2Fmy-collection%2F%3F_aif%3D' + item.media_id + '%26_aid%3D' + user_id ;
+}
+
 function vp_contact_link(cid) {
   //modalEl.data.owner = "contact";
   
+  
   var vpdata = g_pswp.getCurrentData(cid) || {};
   var item = vpdata.item;
-  var subject = item.title || '';
-  
+
   var curator = vpdata.curator || {};
   var email = curator.email_address || '';
   var curator_name = curator.display_name || 'gallery';
+  var artist_name = vp_artist_name(vpdata, item.artist_id);
+
+  console.log("contact item: ", item);
+  
+  // subject: Curators Name : Collector Inquiry on “Title”
+  var title = item.title || 'Untitled Image'
+  var subject = curator_name + ': Collector Inquiry on &quot;' + title + "&quot; by " + artist_name;
+  
   
   var recipient = email ? curator_name + " <" + email + ">" : '';
   var obj_type = 'media_collection_map';
   var obj_id = item.map_id;
   
-  var link = "/contact/?recipient=" + encodeURIComponent(recipient) + "&subject=" + encodeURIComponent(subject);
+  var link = "/share/?recipient=" + encodeURIComponent(recipient) + "&subject=" + encodeURIComponent(subject);
   link = link + "&obj_type=" + obj_type + "&obj_id=" + obj_id;
   
   if(g_user_id && vpdata.user) {
@@ -1163,7 +1214,7 @@ function vp_infomap(json) {
   var hasmap = false;
   
   if(address_formatted = curator.address_formatted) {    
-    var address_link = "http://maps.google.com/?q=" + encodeURIComponent(address_formatted);
+    var address_link = "https://maps.google.com/?q=" + encodeURIComponent(address_formatted);
     var address_anchor = '<a href="' + address_link + '" target="new">' + 'View in Google Maps' + '</a>';
     //details = details + ' Address:' + address_anchor + '<br>';
   }
@@ -1213,6 +1264,22 @@ function vp_infotabs() {
   return output;
 }       
 
+
+function vp_popup(link) {
+  var full_link = vp_full_link(link);
+  console.log("vp_popup: link=" + full_link);
+  window.open(full_link, 'pswp_share', 'scrollbars=yes,resizable=yes,toolbar=no,'+
+              'location=no,width=640,height=620,top=100,left=' + 
+              (window.screen ? Math.round(screen.width / 2 - 275) : 100));
+}
+
+function vp_full_link(link) {
+  var sharer_id = g_sharer_id ? g_sharer_id : 1;
+  var tail = "_aid=" + sharer_id;
+  var full_link = link.indexOf('?') > -1 ? link + "&" + tail : link + "?" + tail; 
+  return g_site_url + full_link;
+}
+
 function vp_iframe(link) {
   var sharer_id = g_sharer_id ? g_sharer_id : 1;
   var tail = "_aid=" + sharer_id;
@@ -1258,7 +1325,7 @@ function vp_search() {
       console.log("Not loading data for plugin id:" +  plugin_id + " cid:" + cid + " status:" + status);
     }
   }
-}
+}                                                  
 
 function initModalMap(map_id) {
   //var lat = $("#" + map_id).data('lat'); 
@@ -1388,14 +1455,15 @@ function isEmail(em) {
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
-  var modalEl = document.getElementById('vp__w3modal');
-  //console.log("Window click on target=", event.target);
-  if (event.target == modalEl) {
-    //console.log("Closing modal");
-    modalEl.style.display = "none";
-  }
+  var modalEl = document.getElementById("vp__my_modal");
+  if (event.target == modalEl) vp__close_modal();
 }
 
+function vp__close_modal() {
+  var modalEl = document.getElementById("vp__my_modal");
+  modalEl.style.display = "none";
+}
+/**
   var modal = '' +
 '<div id="vp__w3modal" class="w3-modal">' +
 ' <div class="w3-modal-content w3-card-4 w3-animate-zoom">' +
@@ -1411,6 +1479,7 @@ window.onclick = function(event) {
 '</div>';                                                            
 
 appendHtml(document.body, modal);
+*/
 
 //console.log("\n\n\nLoaded...\n\n\n");
 //zoomOutMobile();       

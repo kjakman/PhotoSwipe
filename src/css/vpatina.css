@@ -5,6 +5,10 @@
   text-align: center !important;
 }
 
+a.pswp__share--twitter:hover,a.pswp__share--facebook:hover,a.pswp__share--pinterest:hover,a.pswp__share--email:hover {
+  background: #55ACEE !important;
+  color: #FFF !important; 
+}
 
 #vp__share-modal {
 }
@@ -13,7 +17,8 @@
   padding: 8px;
 }
 
-.vp__share-modal-content {
+#vp__my_modal .w3-button, #vp__my_modal .w3-button:hover {
+  background-color: transparent !important;
 }
 
 .vp__share-modal-content {
@@ -21,7 +26,21 @@
   max-width: 600px !important;
   margin: 0px auto !important;
   font-size: 14px !important;
+  top: 56px;
 }
+
+.vp__my-modal-content {
+  top: 26px;
+  width: 90% !important;
+  max-width: 600px !important;
+  z-index: 1600 !important; /* Sit on top */  
+  border-radius: 2px;
+}
+
+.pswp__share-modal {
+  position: fixed;
+}
+
 
 .vp__share-modal-content H4 {
   font-size: 16px !important;
@@ -154,6 +173,19 @@
   padding: 16px 12px;
 } 
 
+.vp__tab-content {
+  display: none;
+  padding: 12px 8px;
+  -webkit-animation: fadeEffect 1s;
+  animation: fadeEffect 1s; /* Fading effect takes 1 second */
+  font-size: 16px;
+  position: relative;
+}
+
+.vp__tab-inner-content {
+  height: inherit;
+}
+
 .vp__tab-inner-content, .vp__tab-inner-content p {
   margin-top: 8px;
   margin-bottom: 14px;
@@ -266,14 +298,7 @@ ul.vp__tabs li a:focus, ul.vp__tabs li a.active {
   text-align: left !important;
 }
 
-/* Style the tab content */
-.vp__tab-content {
-  display: none;
-  padding: 16px 12px;
-  -webkit-animation: fadeEffect 1s;
-  animation: fadeEffect 1s; /* Fading effect takes 1 second */
-  font-size: 16px;
-}
+
 
 @-webkit-keyframes fadeEffect {
     from {opacity: 0;}
